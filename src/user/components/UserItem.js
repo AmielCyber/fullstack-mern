@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./UserItem.css";
-import Card from "../../shared/UIElements/Card/Card";
-import Avatar from "../../shared/UIElements/Avatar/Avatar";
+import Card from "../../shared/components/UIElements/Card/Card";
+import Avatar from "../../shared/components/UIElements/Avatar/Avatar";
 
 function UserItem(props) {
   <li className="user-item">
