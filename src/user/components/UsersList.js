@@ -1,4 +1,4 @@
-import "./UserList.css";
+import "./UsersList.css";
 import UserItem from "./UserItem";
 
 function UsersList(props) {
@@ -9,9 +9,8 @@ function UsersList(props) {
       </div>
     );
   }
-
   return (
-    <ul>
+    <ul className="users-list">
       {props.items.map((user) => {
         return (
           <UserItem
