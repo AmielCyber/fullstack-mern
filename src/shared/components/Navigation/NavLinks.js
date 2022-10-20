@@ -6,7 +6,7 @@ function NavLinks() {
   return (
     <ul className="nav-links">
       <li>
-        <NavLink to="/" exact>
+        <NavLink end to="/">
           ALL USERS
         </NavLink>
       </li>

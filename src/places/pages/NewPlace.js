@@ -1,5 +1,4 @@
-function NewPlace(props) {
-  console.log(props);
+function NewPlace() {
   return <h2>NewPlace Works!</h2>;
 }
 
