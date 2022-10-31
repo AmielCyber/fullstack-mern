@@ -1,7 +1,9 @@
 import { useReducer, useEffect } from "react";
+
 import { validate } from "../../util/validators";
 import "./Input.css";
-const inputReducer = (state, action) => {
+
+function inputReducer(state, action) {
   switch (action.type) {
     case "CHANGE": {
       return {
@@ -19,7 +21,8 @@ const inputReducer = (state, action) => {
     default:
       return state;
   }
-};
+}
+
 function Input(props) {
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue || "",

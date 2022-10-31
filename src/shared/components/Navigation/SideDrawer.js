@@ -1,5 +1,6 @@
 import { createPortal } from "react-dom";
 import { CSSTransition } from "react-transition-group";
+
 import "./SideDrawer.css";
 
 function SideDrawer(props) {

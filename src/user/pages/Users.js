@@ -1,4 +1,5 @@
 import UsersList from "../components/UsersList";
+
 function Users() {
   const USERS = [
     {
