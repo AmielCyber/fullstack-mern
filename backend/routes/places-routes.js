@@ -1,65 +1,40 @@
-const express = require("express");
+import express from "express";
+import { check } from "express-validator";
+// My imports.
+import {
+  getPlaceById,
+  getPlacesByUserId,
+  createPlace,
+  updatePlaceById,
+  deletePlaceById,
+} from "../controllers/places-controllers.js";
 
-const HttpError = require('../models/http-error')
+// Router to export to register middleware for this path.
+const router = express.Router();
+// router.httpMethod(path, middleWareFunction, nextMiddleWareFunction...);
+// router.httpMethod(path, Array<middleWareFunction>);
+// path => /api/places/..
 
-const router = express.Router();// Router to register middleware
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Building",
-    description: "One of the most famous sky scrapers in the world!",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg",
-    address: "20 W 34th St, New York, NY 10001",
-    location: {
-      lat: 40.7484405,
-      lng: -73.9878584,
-    },
-    creator: "u1",
-  },
-  {
-    id: "p2",
-    title: "Empire State Building",
-    description: "One of the most famous sky scrapers in the world!",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg",
-    address: "20 W 34th St, New York, NY 10001",
-    location: {
-      lat: 40.7484405,
-      lng: -73.9878584,
-    },
-    creator: "u2",
-  },
-];
+router.get("/user/:uid", getPlacesByUserId);
 
-// Respond to home page with dynamic place id.
-router.get('/:pid', (req, res) => {
-  // Extract dynamic place id
-  const placeId = req.params.pid;
+router.get("/:pid", getPlaceById);
 
-  // Get place.
-  const place = DUMMY_PLACES.find(p => p.id === placeId);
+router.patch(
+  "/:pid",
+  [check("title").not().isEmpty(), check("description").isLength({ min: 5 })],
+  updatePlaceById
+);
 
-  if(!place){
-    // Place not found.
-    throw new HttpError('Could not find a place for the provided id.', 404)
-  }
+router.delete("/:pid", deletePlaceById);
 
-  res.json({place}) // Returns an empty object if place not found.
-})
+router.post(
+  "/",
+  [
+    check("title").not().isEmpty(),
+    check("description").isLength({ min: 5 }),
+    check("address").not().isEmpty(),
+  ],
+  createPlace
+);
 
-router.get('/user/:uid', (req, res, next) => {
-  const userId = req.params.uid;
-
-  const place = DUMMY_PLACES.find(p => p.creator === userId);
-
-  if(!place){
-    // Place not found.
-    const error = new HttpError('Could not find a place for the provided id.', 404)
-    return next(error);
-  }
-
-  res.json({place});
-})
-
-module.exports = router;
+export default router;
