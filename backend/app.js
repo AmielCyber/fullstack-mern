@@ -1,8 +1,13 @@
 import express from "express";
+import mongoose from "mongoose";
+import * as dotenv from "dotenv";
 // My imports.
 import placesRoutes from "./routes/places-routes.js";
 import userRoutes from "./routes/user-routes.js";
 import HttpError from "./models/http-error.js";
+
+// Set dotenv config so node has access to the .env.local file for our API keys.
+dotenv.config({ path: "./.env.local" });
 
 // The server port.
 const PORT = 5050;
@@ -34,5 +39,14 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "An unknown error occurred!" });
 });
 
-// Start our server.
-app.listen(PORT);
+// Establish connection with our DB.
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    // If DB connection is successful then start our server.
+    app.listen(PORT);
+  })
+  .catch((err) => {
+    // Display error in starting up our server.
+    console.log(err);
+  });
