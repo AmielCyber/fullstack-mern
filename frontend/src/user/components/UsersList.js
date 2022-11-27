@@ -1,7 +1,12 @@
-import "./UsersList.css";
 import UserItem from "./UserItem";
 import Card from "../../shared/components/UIElements/Card/Card";
+import "./UsersList.css";
 
+/**
+ * User List with their user items(places).
+ * @param {*} props
+ * @returns JSX Element<ul></ul>.
+ */
 function UsersList(props) {
   if (props.items.length === 0) {
     return (
@@ -21,7 +26,7 @@ function UsersList(props) {
             id={user.id}
             image={user.image}
             name={user.name}
-            placeCount={user.places}
+            placeCount={user.places.length}
           />
         );
       })}
