@@ -15,7 +15,7 @@ export async function getPlaceById(req, res, next) {
   try {
     place = await Place.findById(placeId);
   } catch (err) {
-    // Missing information.
+    // Database error.
     const error = new HttpError(
       "Something went wrong, could not find a place.",
       500
@@ -39,11 +39,12 @@ export async function getPlaceById(req, res, next) {
 export async function getPlacesByUserId(req, res, next) {
   const userId = req.params.uid;
 
-  // Find with the user id.
+  // Find a user's places with their user id.
   let userWithPlaces;
   try {
     userWithPlaces = await User.findById(userId).populate("places");
   } catch (err) {
+    // Database error.
     const error = new HttpError(
       "Fetching places failed. Please try again later.",
       500
@@ -52,7 +53,7 @@ export async function getPlacesByUserId(req, res, next) {
   }
 
   if (!userWithPlaces || userWithPlaces.places.length === 0) {
-    // Place not found.
+    // User not found or user does not have any places.
     const error = new HttpError(
       "Could not find places for the provided id.",
       404
@@ -69,11 +70,15 @@ export async function getPlacesByUserId(req, res, next) {
 }
 
 export async function createPlace(req, res, next) {
+  // Validate user inputs are correct.
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
+    // If validation contains errors.
     console.log(errors);
     next(new HttpError("Invalid inputs passed", 422));
   }
+
   // Get json parsed
   const { title, description, address, creator } = req.body;
 
@@ -95,11 +100,14 @@ export async function createPlace(req, res, next) {
     creator,
   });
 
+  // Place the place in the user's places.
   console.log(creator);
   let user;
   try {
+    // Find user in our DB.
     user = await User.findById(creator);
   } catch (err) {
+    // Database error.
     const error = new HttpError(
       "Creating place failed, please try again.",
       500
@@ -108,6 +116,7 @@ export async function createPlace(req, res, next) {
   }
 
   if (!user) {
+    // User not found in our database.
     const error = new HttpError("Could not find user for provided ID.", 404);
     return next(error);
   }
@@ -123,6 +132,7 @@ export async function createPlace(req, res, next) {
     // Only if all sessions are successful.
     await session.commitTransaction();
   } catch (err) {
+    // Transaction failed.
     const error = new HttpError("Creating place failed, please try again", 500);
     return next(error);
   }
@@ -132,8 +142,10 @@ export async function createPlace(req, res, next) {
 }
 
 export async function updatePlaceById(req, res, next) {
+  // Validate user inputs are correct.
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    // Validation has errors.
     const error = new HttpError("Invalid inputs passed", 422);
     return next(error);
   }
@@ -147,6 +159,7 @@ export async function updatePlaceById(req, res, next) {
     // Find place.
     place = await Place.findById(placeId);
   } catch (err) {
+    // Database error.
     const error = new HttpError(
       "Something went wrong, could not update place.",
       500
@@ -177,7 +190,7 @@ export async function deletePlaceById(req, res, next) {
 
   let place;
   try {
-    // populate refer to a document stored in another document (creator).
+    // Populate refer to a document stored in another document (creator).
     place = await Place.findById(placeId).populate("creator");
   } catch (err) {
     const error = new HttpError(

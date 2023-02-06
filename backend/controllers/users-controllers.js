@@ -9,7 +9,7 @@ export async function getUsers(req, res, next) {
     // Get users and exclude the password.
     users = await User.find({}, "-password");
   } catch (err) {
-    console.log(err);
+    console.error(err);
     const error = new HttpError(
       "Fetching users failed. Please try again later",
       500
@@ -36,6 +36,7 @@ export async function signup(req, res, next) {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
+    // DB error.
     const error = new HttpError(
       "Signing up failed, please try again later.",
       500
@@ -44,6 +45,7 @@ export async function signup(req, res, next) {
   }
 
   if (existingUser) {
+    // User already exists.
     const error = new HttpError(
       "User exists already, please login instead",
       422
@@ -81,6 +83,7 @@ export async function login(req, res, next) {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
+    // DB error.
     const error = new HttpError(
       "Logging in  failed, please try again later.",
       500
@@ -89,6 +92,7 @@ export async function login(req, res, next) {
   }
 
   if (!existingUser || existingUser.password !== password) {
+    // User does not exists or password is incorrect.
     const error = new HttpError("Invalid credentials", 401);
     return next(error);
   }

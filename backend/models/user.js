@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import mongooseUniqueValidator from "mongoose-unique-validator";
 
+// Create User Model.
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   // Creates an index and will speed up the index

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Create my Place Model.
 const PlaceSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
