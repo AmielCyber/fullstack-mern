@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
-
+// My imports.
 import "./Button.css";
 
+/**
+ * Button Component for reusability.
+ * @param {buttonTypeObj} props ButtonTypes: href: link w/o wrap, to: link w/ wrap, empty: button w/ callback.
+ * @returns
+ */
 function Button(props) {
   if (props.href) {
     return (

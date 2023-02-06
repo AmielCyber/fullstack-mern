@@ -3,7 +3,7 @@ import "./LoadingSpinner.css";
 /**
  * Displays a loading spinner. Used when we are fetching data or waiting a response
  * from our backend.
- * @param {*} props
+ * @param {asOverlay} props: {asOverlay: boolean}
  * @returns JSX Element.
  */
 function LoadingSpinner(props) {

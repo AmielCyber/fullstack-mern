@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
-
+// My imports.
 import "./UserItem.css";
 import Card from "../../shared/components/UIElements/Card/Card";
 import Avatar from "../../shared/components/UIElements/Avatar/Avatar";
 
+/**
+ * Displays a place item.
+ * @param {id, image, name, placeCount} props: {id: number, image: string, name: string, placeCount: number}
+ * @returns
+ */
 function UserItem(props) {
   return (
     <li className="user-item">

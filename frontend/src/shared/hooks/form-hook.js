@@ -1,5 +1,11 @@
 import { useCallback, useReducer } from "react";
 
+/**
+ * Form reducer to manage form state changes.
+ * @param state  The current react state.
+ * @param action The action to be performed on the state.
+ * @returns The new state.
+ */
 function formReducer(state, action) {
   switch (action.type) {
     case "INPUT_CHANGE": {
@@ -31,6 +37,12 @@ function formReducer(state, action) {
   }
 }
 
+/**
+ * Form custom hook state.
+ * @param initialInputs
+ * @param initialFormValidity
+ * @returns form hook. [formState, inputHandler, setFormData];
+ */
 export function useForm(initialInputs, initialFormValidity) {
   const [formState, dispatch] = useReducer(formReducer, {
     inputs: initialInputs,

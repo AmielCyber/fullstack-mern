@@ -4,7 +4,7 @@ import "./UsersList.css";
 
 /**
  * User List with their user items(places).
- * @param {*} props
+ * @param {items} props: {items: {}}
  * @returns JSX Element<ul></ul>.
  */
 function UsersList(props) {

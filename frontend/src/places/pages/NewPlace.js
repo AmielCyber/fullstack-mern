@@ -1,5 +1,6 @@
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
+// My imports.
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH,
@@ -7,6 +8,10 @@ import {
 import { useForm } from "../../shared/hooks/form-hook";
 import "./PlaceForm.css";
 
+/**
+ * NewPlace form that adds a new place for a user.
+ * @returns NewPlace Component.
+ */
 function NewPlace() {
   const [formState, inputHandler] = useForm(
     {

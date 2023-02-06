@@ -3,7 +3,7 @@ import Button from "../../FormElements/Button";
 
 /**
  * Error Modal to display errors.
- * @param {*} props
+ * @param {onClear, error} props: onClear: function, error: boolean
  * @returns JSX Element.
  */
 function ErrorModal(props) {

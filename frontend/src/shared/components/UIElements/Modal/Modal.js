@@ -1,10 +1,11 @@
 import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { CSSTransition } from "react-transition-group";
-
+// My imports.
 import Backdrop from "../Backdrop/Backdrop";
 import "./Modal.css";
 
+// Modal Overlay Component to be display with a backdrop modal.
 function ModalOverlay(props) {
   const content = (
     <div className={`modal ${props.className}`} style={props.style}>

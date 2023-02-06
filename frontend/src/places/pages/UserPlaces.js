@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
-
+// My imports.
 import PlaceList from "../components/PlaceList";
 
+// Dummy places to be later replaced with google maps.
 const DUMMY_PLACES = [
   {
     id: "p1",
@@ -30,6 +31,10 @@ const DUMMY_PLACES = [
     creator: "u2",
   },
 ];
+/**
+ * Displays places from a user.
+ * @returns UserPlaces component
+ */
 function UserPlaces() {
   const userId = useParams().userId;
   const loadedPlaces = DUMMY_PLACES.filter((place) => place.creator === userId);

@@ -40,6 +40,7 @@ const DUMMY_PLACES = [
   },
 ];
 
+// Updated Place Form component.
 function UpdatePlace() {
   const [isLoading, setIsLoading] = useState(true);
   const placeId = useParams().placeId;
