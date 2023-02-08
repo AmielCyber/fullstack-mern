@@ -105,6 +105,7 @@ function Auth() {
         });
         const responseData = await response.json();
         if (!response.ok) {
+          // If response was not successful.
           throw new Error(responseData.message);
         }
         setIsLoading(false);

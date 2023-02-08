@@ -6,6 +6,9 @@ import User from "../models/user.js";
 import HttpError from "../models/http-error.js";
 import { getCoordsForAddress } from "../util/location.js";
 
+/**
+ * Retrieves a place by the the placeId.
+ */
 export async function getPlaceById(req, res, next) {
   // Extract dynamic place id
   const placeId = req.params.pid;
@@ -33,15 +36,20 @@ export async function getPlaceById(req, res, next) {
   }
 
   // Return a normal JS object and add the id property from mongodb.
+  // getters: true - Mongoose adds a getters id property to the created object w/o the underscore.
   res.json({ place: place.toObject({ getters: true }) }); // Returns an empty object if place not found.
 }
 
+/**
+ *  Retrieves a list of places from a user's id.
+ */
 export async function getPlacesByUserId(req, res, next) {
   const userId = req.params.uid;
 
   // Find a user's places with their user id.
   let userWithPlaces;
   try {
+    // userWithPlaces with places array.
     userWithPlaces = await User.findById(userId).populate("places");
   } catch (err) {
     // Database error.
@@ -82,26 +90,15 @@ export async function createPlace(req, res, next) {
   // Get json parsed
   const { title, description, address, creator } = req.body;
 
+  // Check if address exists.
   let coordinates;
   try {
-    coordinates = getCoordsForAddress(address);
+    coordinates = await getCoordsForAddress(address);
   } catch (error) {
     return next(error);
   }
 
-  // Create new Place Schema
-  const createdPlace = new Place({
-    title,
-    description,
-    address,
-    location: coordinates,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/GoldenGateBridge-001.jpg/600px-GoldenGateBridge-001.jpg",
-    creator,
-  });
-
-  // Place the place in the user's places.
-  console.log(creator);
+  // Check if user exists.
   let user;
   try {
     // Find user in our DB.
@@ -121,18 +118,34 @@ export async function createPlace(req, res, next) {
     return next(error);
   }
 
+  // Create new Place Schema
+  const createdPlace = new Place({
+    title,
+    description,
+    address,
+    location: coordinates,
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/GoldenGateBridge-001.jpg/600px-GoldenGateBridge-001.jpg",
+    creator,
+  });
+
   try {
     const session = await mongoose.startSession();
     // Start session to save two related sessions.
     session.startTransaction();
+    // Save created place and provide session.
     await createdPlace.save({ session: session });
+    // Add place to the places of the user.
     user.places.push(createdPlace);
+    // Save to user.
     await user.save({ session: session, validateModifiedOnly: true });
+    console.log("hey");
 
-    // Only if all sessions are successful.
+    // Only if all sessions are successful or else everything above gets rolled back.
     await session.commitTransaction();
   } catch (err) {
     // Transaction failed.
+    console.log(err);
     const error = new HttpError("Creating place failed, please try again", 500);
     return next(error);
   }
@@ -207,7 +220,8 @@ export async function deletePlaceById(req, res, next) {
   }
 
   try {
-    // Start session to delete place in both places.
+    // Start session to delete place in both places Users and Places.
+    // Remove and pull.
     const session = await mongoose.startSession();
     session.startTransaction();
 

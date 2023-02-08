@@ -11,12 +11,13 @@ export async function getUsers(req, res, next) {
   } catch (err) {
     console.error(err);
     const error = new HttpError(
-      "Fetching users failed. Please try again later",
+      "Fetching users failed. Please try again later.",
       500
     );
     return next(error);
   }
 
+  // Find returns an array of users.
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 }
 
@@ -58,7 +59,7 @@ export async function signup(req, res, next) {
     name,
     email,
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/GoldenGateBridge-001.jpg/600px-GoldenGateBridge-001.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg",
     password,
     places: [],
   });

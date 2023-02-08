@@ -17,10 +17,13 @@ const app = express();
 app.use(express.json());
 
 // Register middleware to have access to our backend calls from our frontend.
+// Request, Response, Next
 app.use((req, res, next) => {
+  // Add headers to respond.
   // Allows which domain have access.
   res.setHeader("Access-Control-Allow-Origin", "*");
-  // Control which headers are allowed
+  // Specified which headers are allowed
+  // Controls which headers which incoming request are handle.
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin,, X-Requested-With, Content-Type, Accept, Authorization"
@@ -36,7 +39,7 @@ app.use((req, res, next) => {
 app.use("/api/places", placesRoutes); // => /api/places/...
 app.use("/api/users", userRoutes); // => /api/users/...
 
-// Register middleware that does not get response.
+// Register middleware that does not get response such as unsupported routes.
 app.use(() => {
   throw new HttpError("Could not find this route.", 404);
 });
@@ -53,8 +56,9 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "An unknown error occurred!" });
 });
 
-// Establish connection with my MongoDB.
+// Establish connection with MongoDB.
 mongoose
+  .set("strictQuery", false)
   .connect(process.env.MONGO_URI)
   .then(() => {
     // If DB connection is successful then start our server.
@@ -62,5 +66,5 @@ mongoose
   })
   .catch((err) => {
     // Display error in starting up our server.
-    console.log(err);
+    console.error(err);
   });

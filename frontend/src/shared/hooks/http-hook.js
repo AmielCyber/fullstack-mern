@@ -7,18 +7,13 @@ import { useState, useCallback, useRef, useEffect } from "react";
 export function useHttpClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  // Stores data across rerender cycles.
   const activeHttpRequests = useRef([]); // Keep an array of active requests.
-
-  useEffect(() => {
-    return () => {
-      // Cleanup.
-      activeHttpRequests.current.forEach((abortCtrl) => abortCtrl.abort());
-    };
-  }, []);
 
   const sendRequest = useCallback(
     async (url, method = "GET", body = null, headers = {}) => {
       setIsLoading(true);
+      // API browser AbortController
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
       let response;
@@ -27,7 +22,7 @@ export function useHttpClient() {
           method,
           body,
           headers,
-          signal: httpAbortCtrl.signal,
+          signal: httpAbortCtrl.signal, // Links this abort controller to this request.
         });
         const responseData = await response.json();
         if (!response.ok) {
@@ -41,6 +36,13 @@ export function useHttpClient() {
     },
     []
   );
+
+  useEffect(() => {
+    return () => {
+      // Cleanup each abort controller.
+      activeHttpRequests.current.forEach((abortCtrl) => abortCtrl.abort());
+    };
+  }, []);
 
   const clearError = () => {
     setError(null);
