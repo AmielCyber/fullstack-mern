@@ -58,8 +58,7 @@ export async function signup(req, res, next) {
   const createdUser = new User({
     name,
     email,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg",
+    image: req.file.path,
     password,
     places: [],
   });
