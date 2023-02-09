@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import mongoose from "mongoose";
+import fs from "fs";
 // My imports.
 import Place from "../models/place.js";
 import User from "../models/user.js";
@@ -124,8 +125,7 @@ export async function createPlace(req, res, next) {
     description,
     address,
     location: coordinates,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/GoldenGateBridge-001.jpg/600px-GoldenGateBridge-001.jpg",
+    image: req.file.path,
     creator,
   });
 
@@ -218,6 +218,8 @@ export async function deletePlaceById(req, res, next) {
     return next(error);
   }
 
+  const imagePath = place.image;
+
   try {
     // Start session to delete place in both places Users and Places.
     // Remove and pull.
@@ -238,6 +240,10 @@ export async function deletePlaceById(req, res, next) {
     );
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Deleted place." });
 }
