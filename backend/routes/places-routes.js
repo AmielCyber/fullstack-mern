@@ -1,5 +1,6 @@
 import express from "express";
 import { check } from "express-validator";
+import fileUpload from "../middleware/file-upload.js";
 // My imports.
 import {
   getPlaceById,
@@ -15,11 +16,11 @@ const router = express.Router();
 // router.httpMethod(path, Array<middleWareFunction>);
 // path => /api/places/..
 router.get("/:pid", getPlaceById);
-
 router.get("/user/:uid", getPlacesByUserId);
 
 router.post(
   "/",
+  fileUpload.single("image"),
   [
     check("title").not().isEmpty(),
     check("description").isLength({ min: 5 }),
