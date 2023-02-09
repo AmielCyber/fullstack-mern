@@ -139,7 +139,6 @@ export async function createPlace(req, res, next) {
     user.places.push(createdPlace);
     // Save to user.
     await user.save({ session: session, validateModifiedOnly: true });
-    console.log("hey");
 
     // Only if all sessions are successful or else everything above gets rolled back.
     await session.commitTransaction();
