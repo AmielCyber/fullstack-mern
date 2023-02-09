@@ -25,14 +25,25 @@ export function useHttpClient() {
           signal: httpAbortCtrl.signal, // Links this abort controller to this request.
         });
         const responseData = await response.json();
+
+        activeHttpRequests.current = activeHttpRequests.current.filter(
+          (reqCtrl) => reqCtrl !== httpAbortCtrl
+        );
+
         if (!response.ok) {
           throw new Error(responseData.message);
         }
+        setIsLoading(false);
         return responseData;
       } catch (err) {
-        setError(err.message);
+        if (!httpAbortCtrl.signal.aborted) {
+          setError(err.message);
+          setIsLoading(false);
+          throw err;
+        } else {
+          return null;
+        }
       }
-      setIsLoading(false);
     },
     []
   );
