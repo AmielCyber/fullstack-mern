@@ -29,3 +29,5 @@ backend/package-lock.json
 
 frontend/node_modules/
 frontend/package-lock.json
+# Ignore added pictures
+backend/uploads/images/*
