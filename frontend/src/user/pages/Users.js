@@ -3,46 +3,35 @@ import { useEffect, useState } from "react";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner/LoadingSpinner";
 import UsersList from "../components/UsersList";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
-async function fetchUsers(setIsLoading, setLoadedUsers, setError) {
-  setIsLoading(true);
+async function fetchUsers(sendRequest, setLoadedUsers) {
   try {
     // Default fetch is GET
-    const response = await fetch("http://localhost:5050/api/users");
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      // If response data is not ok.
-      throw new Error(responseData.message);
+    const responseData = await sendRequest("http://localhost:5050/api/users");
+    if (responseData) {
+      setLoadedUsers(responseData.users);
     }
-
-    setLoadedUsers(responseData.users);
   } catch (err) {
-    setError(err.message);
+    console.log(err);
   }
-  setIsLoading(false);
 }
 /**
  * Displays a list of current signed up users.
  * @returns JSX Element.
  */
 function Users() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedUsers, setLoadedUsers] = useState();
 
   useEffect(() => {
     // Only when page loads useEffect(() => {}, []).
-    fetchUsers(setIsLoading, setLoadedUsers, setError);
-  }, []);
+    fetchUsers(sendRequest, setLoadedUsers);
+  }, [sendRequest]);
 
-  const errorHandler = () => {
-    setError(null);
-  };
   return (
     <>
-      <ErrorModal error={error} onClear={errorHandler} />
+      <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
           <LoadingSpinner />

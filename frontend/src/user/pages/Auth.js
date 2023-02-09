@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 // My imports.
+import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import { useForm } from "../../shared/hooks/form-hook";
 import Card from "../../shared/components/UIElements/Card/Card";
@@ -21,8 +22,7 @@ import "./Auth.css";
 function Auth() {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -64,66 +64,53 @@ function Auth() {
 
   const authSubmitHandler = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
 
-    let response;
     if (isLoginMode) {
       try {
-        response = await fetch("http://localhost:5050/api/users/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const responseData = await sendRequest(
+          "http://localhost:5050/api/users/login",
+          "POST",
+          JSON.stringify({
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
-        const responseData = await response.json();
-        if (!response.ok) {
-          throw new Error(responseData.message);
+          {
+            "Content-Type": "application/json",
+          }
+        );
+        if (responseData) {
+          auth.login(responseData.user.id);
         }
-        setIsLoading(false);
-        auth.login();
       } catch (err) {
-        setIsLoading(false);
-        setError(err.message || "Something went wrong, please try again.");
+        console.error(err);
       }
     } else {
       // Fetch the backend signup
       try {
-        response = await fetch("http://localhost:5050/api/users/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const responseData = await sendRequest(
+          "http://localhost:5050/api/users/signup",
+          "POST",
+          JSON.stringify({
             name: formState.inputs.name.value,
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
-        const responseData = await response.json();
-        if (!response.ok) {
-          // If response was not successful.
-          throw new Error(responseData.message);
+          {
+            "Content-Type": "application/json",
+          }
+        );
+        if (responseData) {
+          auth.login(responseData.user.id);
         }
-        setIsLoading(false);
-        auth.login();
       } catch (err) {
-        setIsLoading(false);
-        setError(err.message || "Something went wrong, please try again.");
+        console.error(err);
       }
     }
   };
 
-  const errorHandler = () => {
-    setError(null);
-  };
-
   return (
     <>
-      <ErrorModal error={error} onClear={errorHandler} />
+      <ErrorModal error={error} onClear={clearError} />
       <Card className="authentication">
         {isLoading && <LoadingSpinner asOverlay />}
         <h2>Login Required</h2>
@@ -154,8 +141,8 @@ function Auth() {
             id="password"
             type="password"
             label="Password"
-            validators={[VALIDATOR_MINLENGTH(5)]}
-            errorText="Please enter a valid password, at least 5 characters."
+            validators={[VALIDATOR_MINLENGTH(6)]}
+            errorText="Please enter a valid password, at least 6 characters."
             onInput={inputHandler}
           />
           <Button type="submit" disabled={!formState.isValid}>
