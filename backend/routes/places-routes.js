@@ -2,6 +2,7 @@ import express from "express";
 import { check } from "express-validator";
 import fileUpload from "../middleware/file-upload.js";
 // My imports.
+import checkAuth from "../middleware/check-auth.js";
 import {
   getPlaceById,
   getPlacesByUserId,
@@ -17,6 +18,10 @@ const router = express.Router();
 // path => /api/places/..
 router.get("/:pid", getPlaceById);
 router.get("/user/:uid", getPlacesByUserId);
+
+// Routers above are open to everyone, but below only to authenticated users with the following MW
+// Any route below here are authenticated protected.
+router.use(checkAuth);
 
 router.post(
   "/",
