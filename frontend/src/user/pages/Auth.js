@@ -85,7 +85,7 @@ function Auth() {
           }
         );
         if (responseData) {
-          auth.login(responseData.user.id);
+          auth.login(responseData.userId, responseData.token);
         }
       } catch (err) {
         console.error(err);
@@ -104,7 +104,7 @@ function Auth() {
           formData // Sets all headers correctly and all data in JSON.
         );
         if (responseData) {
-          auth.login(responseData.user.id);
+          auth.login(responseData.userId, responseData.token);
         }
       } catch (err) {
         console.error(err);
