@@ -89,7 +89,7 @@ export async function createPlace(req, res, next) {
   }
 
   // Get json parsed
-  const { title, description, address, creator } = req.body;
+  const { title, description, address } = req.body;
 
   // Check if address exists.
   let coordinates;
@@ -103,7 +103,7 @@ export async function createPlace(req, res, next) {
   let user;
   try {
     // Find user in our DB.
-    user = await User.findById(creator);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     // Database error.
     const error = new HttpError(
@@ -126,7 +126,7 @@ export async function createPlace(req, res, next) {
     address,
     location: coordinates,
     image: req.file.path,
-    creator,
+    creator: req.userData.userId,
   });
 
   try {
@@ -179,6 +179,16 @@ export async function updatePlaceById(req, res, next) {
     return next(error);
   }
 
+  // Creator is an object id from mongoose
+  if (place.creator.toString() !== req.userData.userId) {
+    // User is not authorized.
+    const error = new HttpError(
+      "You are not authorized to edit this place!",
+      401
+    );
+    return next(error);
+  }
+
   // Update title and description.
   place.title = title;
   place.description = description;
@@ -215,6 +225,11 @@ export async function deletePlaceById(req, res, next) {
   // check if a place actually exists.
   if (!place) {
     const error = new HttpError("Could not find place for this id.", 404);
+    return next(error);
+  }
+
+  if (place.creator.id !== req.userData.userId) {
+    const error = new HttpError("You are not allowed to edit this place.", 403);
     return next(error);
   }
 
